@@ -64,11 +64,12 @@ Asensin openjdk-11 '_headless_':nä, tällöin kaikki graafiseen käyttöliittym
 
 	agent $ sudo apt install -y openjdk-11-jre
 
+_Huomasin myöhemmin, että olin asentanutkin openjdk:n EI-headlessinä. Tällä ei käytännössä ole väliä palvelimen toiminnan kannalta, mutta EI-headless versio on isompi asennus. Jos tallennustila on kireällä, niin tämä voi olla kriittinen valinta._
 Varmistin asennuksen onnistumisen ajamalla
 
 	slave $ java -version
 
-![scrshot2](../image/scrshot002.png)
+![scrshot2](../images/scrshot002.png)
 
 Seuraavaksi yritin käynnistää palvelimen _server.jar_, mutta sain virheilmoituksen; minun täytyy hyväksyä loppukäyttäjän lisenssisopimus. Käynnistyessään palvelin luo kansioon, jossa _server.jar_ sijaitsee useamman tiedoston ja kansion. Näiden joukossa on _eula.txt_, johon muutetaan siellä lukevan _eula=false_ arvoksi _eula=true_.
 
@@ -85,3 +86,37 @@ Palvelin lähti pyörimään! Odotin, että palvelin ilmoittaa "Done". Nyt pysty
 _Pelaajani palvelimella. Terminaalissa näkyy kirjautumiseni, sekä lähettämäni viesti_
 ![scrshot5](../images/scrshot005.png)
 
+Seuraavaksi vein **sftp**:llä tekemäni minecontrol-skriptin _(linkkaa repo tähän myöhemmin)_. Vein skriptin tekemääni **minecraft/**-kansioon. Seuraavaksi otin yhteyden agentti-koneelle, menin **minecraft/**-kansioon ja ajoin komennon
+
+	agent $ bash 2ndscript.sh start
+
+_Tässä vaiheessa en ollut vielä nimennyt skriptiä 'minecontrol':ksi._
+
+Sain ilmoituksen palvelimen onnistuneesta käynnistymisestä!
+
+![scrshot6](../images/scrshot006.png)
+
+Seuraavaksi kokeilin kirjautua Minecraftissä palvelimelleni. Se onnistui! Avasin tmux-terminaalin, jossa _server.jar_ oli käynnissä tarkistaakseni, että olin tosiaan omalla palvelimellani.
+
+	slave $ bash 2ndscript.sh opentmux
+
+![scrshot7](../images/scrshot007.png)
+
+Tämän jälkeen sammutin palvelimen komennolla
+
+	slave $ bash 2ndscript.sh stop
+
+_server.jar sammui ja peli ilmoitti yhteyden katkenneen_
+![scrshot8](../images/scrshot008.png)
+
+Olin näin saanut käsin asennuksen tehtyä! Seuraavaksi aloitin asennuksen, tiedostojen viennin yms. automanisoinnin.
+
+Alustavasti tarvitsisin seuraavat:
+
+* Vie server.jar herralta agentille kansioon **~/minecraft/**
+* Luo samaan kansioon tiedosto _eula.txt_, joka sisältää '_eula=true_'
+* Vie minecontrol-skripti joko samaan kansioon, tai kansioon **/usr/local/bin**
+* Asenna openjdk-11-jre-headless
+* Käynnistä server.jar saltin avulla
+
+## Automatisoinnin aloitus
