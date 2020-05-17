@@ -43,3 +43,45 @@ Seuraavaksi yhdistin agentti-koneelle **sftp**:llä, loin kansion **minecraft/**
 	sftp> put server.jar
 
 ![scrshot1](../images/scrshot001.png)
+
+Seuraavaksi otin uudestaan yhteyden agentti-koneelle, siirryin kansioon **minecraft** ja yritin käynnistää _server.jar_:n. Käytin komentoa
+
+	agent $ java -jar server.jar nogui
+
+Tämä löytyy pidempänä samalta sivulta, josta latasin _server.jar_:n. Otin testien ajaksi pois muistin maksimi- ja minimimäärittelyt.
+
+Sain kuitenkin virheilmoituksen, sillä koneelle ei ole asennettu javaa, jolla käynnistettäisiin palvelin. Virheilmoitus antaa kuitenkin pari vinkkiä etenemiseen.
+
+_Virheilmoitus:_
+
+	Command 'java' not found, but can be installed with:
+
+	sudo apt install default-jre            
+	sudo apt install openjdk-11-jre-headless
+	sudo apt install openjdk-8-jre-headless 
+
+Asensin openjdk-11 '_headless_':nä, tällöin kaikki graafiseen käyttöliittymään jää pois asennuspaketista, jos [Debian wikiä](https://wiki.debian.org/Java/) on uskominen.
+
+	agent $ sudo apt install -y openjdk-11-jre
+
+Varmistin asennuksen onnistumisen ajamalla
+
+	slave $ java -version
+
+![scrshot2](../image/scrshot002.png)
+
+Seuraavaksi yritin käynnistää palvelimen _server.jar_, mutta sain virheilmoituksen; minun täytyy hyväksyä loppukäyttäjän lisenssisopimus. Käynnistyessään palvelin luo kansioon, jossa _server.jar_ sijaitsee useamman tiedoston ja kansion. Näiden joukossa on _eula.txt_, johon muutetaan siellä lukevan _eula=false_ arvoksi _eula=true_.
+
+![scrshot4](../images/scrshot004.png)
+
+![scrshot3](../images/scrshot003.png)
+
+Kokeilin tämän jälkeen käynnistää palvelimen uudestaan komennolla
+
+	slave $ java -jar server.jar nogui
+
+Palvelin lähti pyörimään! Odotin, että palvelin ilmoittaa "Done". Nyt pystyisin kirjautumaan Minecraftissä omalle palvelimelleni, sillä palomuuri oli auki (sitä ei oltu edes asetettu). Pääsen pelissä palvelimelle antamalla pelkästään IP-osoitteen.
+
+_Pelaajani palvelimella. Terminaalissa näkyy kirjautumiseni, sekä lähettämäni viesti_
+![scrshot5](../images/scrshot005.png)
+
