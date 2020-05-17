@@ -1,0 +1,45 @@
+# Harjoitus 7
+
+## 'Oma moduli (iso tehtävä). Ratkaise jokin oikean elämän tai keksitty tarve omilla tiloilla/moduleilla'
+
+Tähän tehtävään päätin ottaa osaksi **Linux palvelimet**-kurssilla luomani Minecraft-palvelinten ohjaus-scriptin **Minecontrol**. Tavoitteena olisi luoda useampi Ubuntu-virtuaalikone, joissa pyörisi Minecraft-palvelin.
+
+Veisin herra-koneelta palvelinten tiedostot agentti-koneille, loisin **Minecontrol**-skriptiin tarvittavia muutoksia **grains**:n tietojen perusteella ja asentaisin tarvittavat ohjelmat/demonit agentti-koneille Minecraft-palvelimen pyörimiseksi.
+
+Tämä verkko tulisi pyörimään omassa yksityisessä verkossa, sillä useamman minecraft palvelimen pyörittäminen vaatisi useampaa palvelinta, joissa olisi 2Gt muistia. Jo kolme tällaista konetta tulisi kustantamaan sen verra, että yhden kurssin loputehtävää varten en viitsi investoida.
+
+## Koneet
+
+Herra-kone:
+* ThinkPad läppärini
+  * OS: Ubuntu 18.04.4 LTS
+  * CPU: Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz
+  * RAM: 8Gt
+
+Agentti-koneet:
+* VirtualBox kone
+  * OS: Ubuntu live server 18.04.4 LTS _(linkaa ISOt)_
+  * CPU: AMD Ryzen 5 2600 Six-Core Processor
+  * RAM: 2Gt
+
+## Aloitus
+
+Aloitin luomalla ensiksi yhden testikoneen, jolla asettaisin palvelimen toiminta kuntoon käsin ennen automatisointia. Tiesin, että tulisin venkslaamaan edestakaisin herra- ja agentti-koneen välillä, joten loin SSH-avainparit koneiden välille komennoilla
+
+	master $ ssh-keygen
+	master $ ssh elmo@'testikoneen-IP'
+	elmo@testikone $ exit
+	master $ ssh-copy-id 'testikoneen-IP'
+
+Seuraavaksi tarvitsin Minecraft-palvelimen _server.jar_-tiedoston. Latasin sen herra-koneelle Minecraftin [virallisilta sivuilta](https://www.minecraft.net/fi-fi/download/server/) _(kirjoitushetkellä versio 1.15.2)_. Loin tämän jälkeen herra-koneella tulevaa salt modulia varten kansion **saltmine/** sijaintiin **/srv/salt/**. En kuitenkaan tulisi vielä tekemään mitään tiedostoja tilan ajamiseksi, vaan siirsin lataamani _server.jar_:n sinne.
+
+	master $ sudo cp /home/elmo/Downloads/server.jar ./server.jar
+
+Seuraavaksi yhdistin agentti-koneelle **sftp**:llä, loin kansion **minecraft/** käyttäjän kotihakemistoon ja kopion herra-koneella olevan _server.jar_:in sinne.
+
+	master $ sftp elmo@192.168.1.120
+	sftp> mkddir minecraft
+	sftp> cd minecraft/
+	sftp> put server.jar
+
+![scrshot1](../images/scrshot001.png)
