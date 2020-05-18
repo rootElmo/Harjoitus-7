@@ -312,3 +312,102 @@ Tämän tilan luomista varten käytin apuna [SaltStackin dokumentaatiota](https:
 	master $ ssh minecraft@192.168.1.122
 
 ![scrshot20](../images/scrshot020.png)
+
+Tämä onnistui! Tein vielä pari muutosta _init.sls_-tiedostoon; lisäsin käyttäjän shelliksi bashin, sekä lisäsin käyttäjän ryhmään 'minecraft'.
+
+_init.sls_
+
+	minecraft:
+	  user.present:
+	    - home: /home/minecraft
+	    - groups:
+	      - minecraft
+	    - password: test
+	    - hash_password: True
+	    - shell: /bin/bash
+
+Päätin poistaa luomani 'elmo' käyttäjän agentti-koneelta. Otin tämän osaksi 'usertest'-tilaa. Käyttäisin luomaani 'minecraft'-käyttäjää ja tämän kotihakemistoa.
+
+_init.sls_
+
+	minecraft:
+	  user.present:
+	    - home: /home/minecraft
+	    - groups:
+	      - minecraft
+	    - password: test
+	    - hash_password: True
+	    - shell: /bin/bash
+
+	elmo:
+	  user.absent:
+	    - purge: True
+
+Tila meni läpi onnistuneesti! En myöskään enää päässyt kirjautumaan käyttäjällä 'elmo'. _Huomasin jälkeenpäin, että olin unohtanut ottaa kuvakaappauksen tästä._
+
+Seuraavaksi päätin kokeilla luoda listan käyttäjistä, jotka teoriassa tulisivat toimimaan palvelimella. Käytin muotteja generoidakseni käyttäjät. Lisäisin myös kaikki käyttäjät, jotka eivät ole ryhmässä '**minecraft**' ryhmään '**user**'. Ajoin tilan aktiiviseksi, mutta sain virheilmoituksen; ryhmää '**user**' ei ollut olemassa.
+
+![scrshot21](../images/scrshot021.png)
+
+_init.sls_
+
+	{% set users = ['bob', 'tauski', 'kovane', 'minecraft'] %}
+	
+	{% for user in users %}
+	{{ user }}:
+	  user.present:
+	    - home: /home/minecraft
+	    - groups:
+	      {% if user != 'minecraft' %}
+	      - user
+	      {% endif %}
+	      - minecraft
+	    - password: test
+	    - hash_password: True
+	    - shell: /bin/bash
+	{% endfor %}
+	elmo:
+	  user.absent:
+	    - purge: True
+
+
+Luin [SalStackin dokumentaatiosta](https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html), että **user.present**:n **groups** lisää siinä määriteltyihin ryhmiin vain jos ryhmät ovat olemassa. Tein pienen lisäyksen _init.sls_-tiedostoon, jossa loisin ryhmän '**user**' ja '**minecraft**' ja homma pelitti! (_minecraft-ryhmä oli jo luotuna minecraft-käyttäjän luonnin takia, mutta jos näin ei olisi, niin luotaisiin ryhmä 'minecraft'_)
+
+_init.sls_
+
+	{% set users = ['bob', 'tauski', 'kovane', 'minecraft'] %}
+
+	user:
+	  group.present
+
+	minecraft group:
+	  group.present:
+	    - name: minecraft
+
+	{% for user in users %}
+	{{ user }}:
+	  user.present:
+	    - home: /home/minecraft
+	    - groups:
+	      {% if user != 'minecraft' %}
+	      - user
+	      {% endif %}
+	      - minecraft
+	    - password: test
+	    - hash_password: True
+	    - shell: /bin/bash
+	{% endfor %}
+
+	elmo:
+	  user.absent:
+	    - purge: True
+
+![scrshot22](../images/scrshot22.png)
+
+Kokeilin seuraavaksi kirjautua kaikilla luomilla käyttäjilläni SSH:n kautta, mikä onnistui! Kaikilla käyttäjillä oli sama salasana, niinkuin oli _init.sls_:ssä määritelty. Sain kuitenkin pitkähkön motd-tyyppisen vastauksen jokaisella käyttäjällä kirjautuessa.
+
+![scrshot23](../images/scrshot23.png)
+
+Lueskelin [tästä keskustelusta](https://askubuntu.com/questions/382931/how-to-remove-legal-notice-from-motd-banner-for-non-root-users), että helpoin ratkaisu olisi poistaa **/etc/legal**. Tätä kuitenkin yrittäessä tajusin, että palvelimella ei ollut enää yhtään sudo-oikeuksilla toimivaa käyttäjää.
+
+Kaikennäköisten epäonnistuneiden kikkailujen jälkeen päätin poistaa agentti-koneen ja luoda uuden.
