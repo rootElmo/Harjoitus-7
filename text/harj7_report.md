@@ -98,13 +98,13 @@ Sain ilmoituksen palvelimen onnistuneesta käynnistymisestä!
 
 Seuraavaksi kokeilin kirjautua Minecraftissä palvelimelleni. Se onnistui! Avasin tmux-terminaalin, jossa _server.jar_ oli käynnissä tarkistaakseni, että olin tosiaan omalla palvelimellani.
 
-	slave $ bash 2ndscript.sh opentmux
+	agent $ bash 2ndscript.sh opentmux
 
 ![scrshot7](../images/scrshot007.png)
 
 Tämän jälkeen sammutin palvelimen komennolla
 
-	slave $ bash 2ndscript.sh stop
+	agent $ bash 2ndscript.sh stop
 
 _server.jar sammui ja peli ilmoitti yhteyden katkenneen_
 ![scrshot8](../images/scrshot008.png)
@@ -120,3 +120,66 @@ Alustavasti tarvitsisin seuraavat:
 * Käynnistä server.jar saltin avulla
 
 ## Automatisoinnin aloitus
+
+Loin automatisointia varten uuden agentti-koneen. Tein kuten alussa, eli automatisoin SSH-yhteyden ottamisen. Seuraavaksi asensin koneelle **salt-minion**:in komennolla
+
+	agent $ sudo apt install -y salt-minion
+
+Vaihdoin myös sudoeditorin **Vim**:ksi komennolla
+
+	agent $ sudo update-alternatives --config editor
+
+Vein koneen ID:n, sekä herrakoneen IP-osoitteen _minion_-tiedostoon seuraavilla komennoilla:
+
+	agent $ echo "id: saltmine001" | sudo tee /etc/salt/minion
+	agent $ echo "master: 192.168.1.103" | sudo tee -a /etc/salt/minion
+
+ja käynnistin **salt-minion**:in uudestaan komennolla
+
+	agent $ sudo systemctl restart salt-minion
+
+Hyväksyin agentti-koneen herra-koneella komennolla
+
+	master $ sudo salt-key -A
+
+Ajoin myös klassisen 'whoami':n saltin kautta tarkistaakseni sen toimivuuden
+
+	sudo salt 'saltmine001' cmd.run 'whoami'
+
+Päätin tämän jälkeen ajaa koneelle aktiiviseksi aikaisemmassa harjoituksessa luomani salt-modulin **motdTemp**, sillä halusin eroon SSH-yhteydellä kirjautuessa joka kerta tulostuvan Ubuntun vakio-motd:n.
+
+	master $ sudo salt 'saltmine001' state.apply motdTemp
+
+Tila meni läpi onnistuneesti ja sain lyhyemmän motd:n kirjautuessani SSH:lla agentti-koneelle.
+
+![scrshot9](../images/scrshot009.png)
+
+Loin tämän jälkeen **/srv/salt/saltmine/**-kansioon _init.sls_-tiedoston salt-modulin ajamista varten. Loin uuden kansion **minecraft/**, joka sisältäisi _server.jar_-tiedoston, joka vietäisiin agentti-koneen kotihakemistoon.
+
+	master $ sudo mkdir minecraft
+	master $ sudo mv server.jar ./minecraft/
+	master $ sudo salt 'saltmine001' state.apply saltmine
+
+_init.sls_:
+
+	minecraft server.jar:
+	  file.recurse:
+	    - name: /home/elmo/minecraft
+	    - source: salt://saltmine/minecraft
+
+![scrshot10](../images/scrshot010.png)
+
+Tarkistin saltilla, että kyseinen kansio oli paikoillaan tiedostoineen:
+
+	master $ sudo salt 'saltmine001' cmd.run ls /home/elmo/minecraft
+
+Terminaaliin tulostui, että paikoillaan oli:
+
+	saltmine001:
+	    server.jar
+
+Tarvitsin vielä **openjdk8**:n, sekä _eula.txt_-tiedoston, sisältönään 'eula=true', jotta voisin käynnistää _server.jar_:n. Loin **minecraft/**-kansioon nopeasti kyseisen tiedoston. Koska _eula.txt_ sijaitsee **minecraft/**-kansiossa _init.sls_ ei tarvitse muutoksia tiedoston viemiseksi, sillä koko kansio viedään tiedostoineen päivineen. Ajoin tilan uudestaan aktiiviseksi ja sain onnistumisesta ilmoituksen!
+
+	master $ sudo salt 'saltmine001' state.apply saltmine
+
+![scrshot11](../images/scrshot011.png)
