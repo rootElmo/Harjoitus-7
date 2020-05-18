@@ -294,3 +294,21 @@ katsoakseni oikeuksia ja nyt näyttää siltä miltä pitää!
 Seuraavaksi olisi luvassa käyttäjien luomista, minecontrol-skriptin asettelua ja editointia, sekä muottien käyttöä. Olen tähän asti kovakoodannut _init.sls_:ään käyttäjänimet, kansiosijainnit yms., mutta useampaa konetta ja käyttäjää hallittaessa tässä törmää nopeasti ongelmiin.
 
 ## Uusien käyttäjien luonti
+
+Loin seuraavaksi uuden kansion **/srv/salt/usertest** käyttäjien luomista ja konffaamista varten saltilla. Loin _init.sls_-tiedoston, ja sinne seuraavat:
+
+	minecraft:
+	  user.present:
+	    - home: /home/minecraft
+	    - password: test
+	    - hash_password: True
+
+Tämän tilan luomista varten käytin apuna [SaltStackin dokumentaatiota](https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html). _Init.sls_ luo nykyisessä muodossaan uuden käyttäjän 'minecraft', asettaa salasanaksi 'test', suolaa salasanan, ja asettaa kotihakemistoksi '**/home/minecraft**'. Ajoin tilan aktiiviseksi muutaman kerran (_kirjoitusvirheiden takia_), lopulta onnistuen. Kokeilin SSH-yhteyttä minecraft-käyttäjälle.
+
+	master $ sudo salt 'saltmine001' state.apply usertest
+
+![scrshot19](../images/scrshot019.png)
+
+	master $ ssh minecraft@192.168.1.122
+
+![scrshot20](../images/scrshot020.png)
