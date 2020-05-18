@@ -221,5 +221,76 @@ Virheilmoitusta tulostui aika mittavasti ja jo virheilmoituksen alkuosista voimm
 
 _pätkää virheilmoituksen alusta:_
 
-	2020-05-18 08:34:06,976 main ERROR Cannot access RandomAccessFile java.io.IOException: Could not create directory /home/elmo/minecraft/logs java.io.IOException: Could not create directory /home/elmo/minecraft/logs
+	2020-05-18 08:34:06,976 main ERROR Cannot access RandomAccessFile
+	 java.io.IOException: Could not create directory
+	 /home/elmo/minecraft/logs java.io.IOException:
+	 Could not create directory /home/elmo/minecraft/logs
 
+_virheilmoitusta tulee:_
+![scrshot14](../images/scrshot014.png)
+
+Ajoin seuraavaksi komennon
+
+	agent $ ls -la
+
+katsoakseni, millä oikeuksilla tiedostot ja kansiot olisivat. Epäilykseni **root**:n omistuksesta olivat oikeassa:
+
+![scrshot15](../images/scrshot015.png)
+
+Seuraavaksi menin herra-koneelle ja tein muutamat muutokset _init.sls_-tiedostoon:
+
+	minecraft directory:
+	  file.directory:
+	    - name: /home/elmo/minecraft
+	    - user: elmo
+	    - mode: 755
+
+	minecraft server.jar:
+	  file.managed:
+	    - name: /home/elmo/minecraft/server.jar
+	    - source: salt://saltmine/minecraft/server.jar
+	    - user: elmo
+	    - mode: 744
+	    - require: 
+	      - file: minecraft directory
+
+	minecraft eula.txt:
+	  file.managed:
+	    - name: /home/elmo/minecraft/eula.txt
+	    - source: salt://saltmine/minecraft/eula.txt
+	    - user: elmo
+	    - mode: 444
+	    - require: 
+	      - file: minecraft directory
+
+	install openjdk:
+	  pkg.installed:
+	    - name: openjdk-11-jre-headless
+
+Muutin kansion **minecraft/**-luomisen erilliseksi osaksi, ja loin _eula.txt_:lle ja _server.jar_:lle omat tilansa. Molemmat vaativat, että **minecraft/**-kansio on luotu. _eula.txt_:lle asetin oikeudet '444', sillä kenenkään ei tarvitse pystyä muuhun kuin tiedoston lukemiseen. _server.jar_:n oikeuksiksi asetin '744', eli testikäyttäjällämme on ajo-, luku- ja kirjoitusoikeudet, mutta muilla vain luku.
+
+Tämän jälkeen ajoin tilan (useita kertoja, paljon pieniä kirjoitusvirheitä) lopulta onnistuneesti!
+
+	master $ sudo salt 'saltmine001' state.apply saltmine
+
+![scrshot17](../images/scrshot017.png)
+
+Otin yhteyden agentti-koneelle, ja käynnistin Minecraft-palvelimen onnistuneesti. Tämän jälkeen kirjauduin Minecraftissä palvelimelleni.
+
+	agent $ cd minecraft/
+	agent $ java -jar server.jar nogui
+
+_palvelin ilmoittaa 'Done' ja päästää pelaamaan!_
+![scrshot16](../images/scrshot016.png)
+
+Oletin tästä, että oikeudet siis olivat menneet nappiin. Agentti-koneella ajoin kansiossa **minecraft/** komennon
+
+	agent $ ls -la
+
+katsoakseni oikeuksia ja nyt näyttää siltä miltä pitää!
+
+![scrshot18](../images/scrshot018.png)
+
+Seuraavaksi olisi luvassa käyttäjien luomista, minecontrol-skriptin asettelua ja editointia, sekä muottien käyttöä. Olen tähän asti kovakoodannut _init.sls_:ään käyttäjänimet, kansiosijainnit yms., mutta useampaa konetta ja käyttäjää hallittaessa tässä törmää nopeasti ongelmiin.
+
+## Uusien käyttäjien luonti
