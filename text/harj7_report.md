@@ -410,4 +410,28 @@ Kokeilin seuraavaksi kirjautua kaikilla luomilla käyttäjilläni SSH:n kautta, 
 
 Lueskelin [tästä keskustelusta](https://askubuntu.com/questions/382931/how-to-remove-legal-notice-from-motd-banner-for-non-root-users), että helpoin ratkaisu olisi poistaa **/etc/legal**. Tätä kuitenkin yrittäessä tajusin, että palvelimella ei ollut enää yhtään sudo-oikeuksilla toimivaa käyttäjää.
 
-Kaikennäköisten epäonnistuneiden kikkailujen jälkeen päätin poistaa agentti-koneen ja luoda uuden.
+Löysin pienen etsiskelyn jälkeen hyvän [Youtube videon](https://www.youtube.com/watch?v=YSSIm0g00m4), jossa kaiken muun lisäksi kerrottiin jokaisen '**admin**'-ryhmään kuuluvan käyttäjän omaavan **sudo**-oikeudet. Joudun tämän tekemään saltin kautta. sillä kellään yksittäisellä käyttäjällä agentti-koneella ei ole oikeuksia tehdä muutoksia.
+
+Yritin lisätä käyttäjän '**minecraft**' ryhmään '**admin**', mutta sain ilmoituksen, että ryhmää ei ole olemassa. Luin [tästä artikkelista](https://askubuntu.com/questions/43317/what-is-the-difference-between-the-sudo-and-admin-group), että '**admin**'-ryhmä on jo vanhentunut ja nykyään käytetään ryhmää '**sudo** vastaaviin tarkoituksiin.
+
+_epäonnistunut komento_
+
+	master $ sudo salt 'saltmine001' cmd.run 'adduser minecraft admin'
+
+_virheilmoitus_
+![scrshot24](../images/scrshot024.png)
+
+_onnistunut komento_
+
+	master $ sudo salt 'saltmine001' cmd.run 'adduser minecraft sudo'
+
+_onnistui!_
+![scrshot25](../images/scrshot025.png)
+
+Seuraavaksi otin SSH-yhteyden agentti-koneelle ja poistin onnistuneesti **/etc/legal**:n. Kirjautuessa sain myös lupaavasti ilmoituksia sudo-oikeuksien käytöstä.
+
+![scrshot27](../images/scrshot027.png)
+
+Näin sain myös kadotettua ikävän pitkän motd:in normaaleilta käyttäjiltä!
+
+![scrshot26](../images/scrshot026.png)
