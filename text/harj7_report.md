@@ -345,7 +345,7 @@ _init.sls_
 
 Tila meni läpi onnistuneesti! En myöskään enää päässyt kirjautumaan käyttäjällä 'elmo'. _Huomasin jälkeenpäin, että olin unohtanut ottaa kuvakaappauksen tästä._
 
-Seuraavaksi päätin kokeilla luoda listan käyttäjistä, jotka teoriassa tulisivat toimimaan palvelimella. Käytin muotteja generoidakseni käyttäjät. Lisäisin myös kaikki käyttäjät, jotka eivät ole ryhmässä '**minecraft**' ryhmään '**user**'. Ajoin tilan aktiiviseksi, mutta sain virheilmoituksen; ryhmää '**user**' ei ollut olemassa.
+Seuraavaksi päätin kokeilla luoda listan käyttäjistä, jotka teoriassa tulisivat toimimaan palvelimella. Käytin muotteja generoidakseni käyttäjät. Lisäisin myös kaikki käyttäjät, jotka eivät ole nimeltään '**minecraft**' ryhmään '**user**'. Ajoin tilan aktiiviseksi, mutta sain virheilmoituksen; ryhmää '**user**' ei ollut olemassa.
 
 ![scrshot21](../images/scrshot021.png)
 
