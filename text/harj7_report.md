@@ -183,3 +183,43 @@ Tarvitsin vielä **openjdk8**:n, sekä _eula.txt_-tiedoston, sisältönään 'eu
 	master $ sudo salt 'saltmine001' state.apply saltmine
 
 ![scrshot11](../images/scrshot011.png)
+
+Lisäsin _init.sls_-tiedostoon pienen pätkän, jolla saisin **openjdk-11** asennettuna _headless_:nä. Ajoin tilan aktiiviseksi, joka onnistui ja testasin, oliko paketti onnistuneesti asennettuna.
+
+_init.sls_
+
+	minecraft server.jar:
+	  file.recurse:
+	    - name: /home/elmo/minecraft
+	    - source: salt://saltmine/minecraft
+
+	install openjdk:
+	  pkg.installed:
+	    - name: openjdk-11-jre-headless
+
+_tilan ajoa:_
+
+![scrshot12](../images/scrshot012.png)
+
+_saltin avulla javan asentumisen testaamista:_
+
+	sudo salt 'saltmine001' cmd.run 'java -version'
+
+_edellisen tuloste:_
+
+![scrshot13](../images/scrshot013.png)
+
+Tässä vaiheessa kaikki mitä Minecraft-palvelimen pyörittämiseen tarvitaan oli paikoillaan. Osasin kuitenkin odottaa ongelmia, sillä **salt**:lla tiedostoja, kansioita yms. viedessä, oikeudet ovat **root**:lla. Kirjaudumme agentti-koneelle aina käyttäjällä '**elmo**' ja näin ollen oletan ongelmia ilmenevän _server.jar_:ia ajettaessa.
+
+Otin yhteyden agentti-koneelle SSH:lla, meni kotihakemistossa **minecraft/**-kansioon ja yritin käynnistää _server.jar_:n
+
+	master $ ssh elmo@192.168.1.122
+	agent $ cd minecraft/
+	agent $ java -jar server.jar nogui
+
+Virheilmoitusta tulostui aika mittavasti ja jo virheilmoituksen alkuosista voimme päätellä, että kyseessä voisi olla ongelma tiedoston/kansion oikeuksien suhteen:
+
+_pätkää virheilmoituksen alusta:_
+
+	2020-05-18 08:34:06,976 main ERROR Cannot access RandomAccessFile java.io.IOException: Could not create directory /home/elmo/minecraft/logs java.io.IOException: Could not create directory /home/elmo/minecraft/logs
+
