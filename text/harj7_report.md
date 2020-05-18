@@ -402,11 +402,11 @@ _init.sls_
 	  user.absent:
 	    - purge: True
 
-![scrshot22](../images/scrshot22.png)
+![scrshot22](../images/scrshot022.png)
 
 Kokeilin seuraavaksi kirjautua kaikilla luomilla käyttäjilläni SSH:n kautta, mikä onnistui! Kaikilla käyttäjillä oli sama salasana, niinkuin oli _init.sls_:ssä määritelty. Sain kuitenkin pitkähkön motd-tyyppisen vastauksen jokaisella käyttäjällä kirjautuessa.
 
-![scrshot23](../images/scrshot23.png)
+![scrshot23](../images/scrshot023.png)
 
 Lueskelin [tästä keskustelusta](https://askubuntu.com/questions/382931/how-to-remove-legal-notice-from-motd-banner-for-non-root-users), että helpoin ratkaisu olisi poistaa **/etc/legal**. Tätä kuitenkin yrittäessä tajusin, että palvelimella ei ollut enää yhtään sudo-oikeuksilla toimivaa käyttäjää.
 
