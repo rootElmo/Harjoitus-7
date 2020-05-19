@@ -435,3 +435,65 @@ Seuraavaksi otin SSH-yhteyden agentti-koneelle ja poistin onnistuneesti **/etc/l
 Näin sain myös kadotettua ikävän pitkän motd:in normaaleilta käyttäjiltä!
 
 ![scrshot26](../images/scrshot026.png)
+
+Aloitin näiden käsin tehtyjen muutosten tekemisen salt-tilalla.
+
+Tein _init.sls_:ään seuraavat muutokset
+
+	{% set users = ['bob', 'tauski', 'kovane', 'minecraft'] %}
+
+	user group:
+	  group.present:
+	    - name: user
+
+	minecraft group:
+	  group.present:
+	    - name: minecraft
+
+	{% for user in users %}
+	{{ user }}:
+	  user.present:
+	    {% if user == 'minecraft'%}
+	    - home: /home/minecraft
+	    - groups:
+	      - minecraft
+	      - sudo
+	    - password: admin123
+	    - hash_password: True
+	    - shell: /bin/bash
+	    {% else %}
+	    - home: /home/minecraft
+	    - groups:
+	      - minecraft
+	      - user
+	    - shell: /bin/bash
+	    {% endif %}
+	{% endfor %}
+
+Jos käyttäjän nimi on '**minecraft**', niin käyttäjä lisätään **sudo**-ryhmään. Muut menevät ryhmiin **minecraft** ja **user**.
+
+Ajoin tilan aktiiviseksi onnistuneesti komennolla
+
+	master $ sudo salt 'saltmine001' state.apply usertest
+
+Seuraavaksi katsoin saltin kautta mihin ryhmiin käyttäjät kuuluivat.
+
+![scrshot28](../images/scrshot028.png)
+
+Tämä meni läpi! Seuraavaksi kokeilin salakirjoittaa salasanan 'test' käyttäjälle '**minecraft**' komennolla
+
+	master $ openssl passwd -1
+
+ja lisäsin saamani tulosteen _init.sls_:ssä siihen kohtaan, jossa määritellään käyttäjän salasana. Seuraavaksi ajoin tilan uudestaan aktiiviseksi, joka onnistui ja kirjauduin '**minecraft**'-käyttäjällä agentti-koneelle SSH:lla. Pääsin sisään kirjoittamalla salasanaksi 'test', jonka olin vienyt salakirjoitettuna! _Init.sls_:ssä tarvitsi myös ottaa '**minecraft**'-käyttäjän määrittelyistä pois 'hash-password: True'.
+
+_init.sls:ssä muuttunut käyttäjän määrittely:_
+
+	{% if user == 'minecraft'%}
+	    - home: /home/minecraft
+	    - groups:
+	      - minecraft
+	      - sudo
+	    - password: $1$Xc08qFAA$gdTf/AzyPA5JGRRq/1H8k/
+	    - shell: /bin/bash
+
+Lähdin seuraavaksi käyttämään saltin **pillareita** käyttäjien luontiin! Käytin ohjeina ja vinkkeinä [SaltStackin dokumentaatiota](https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html), [erästä stackoverflow keskustelua](https://stackoverflow.com/questions/25077699/saltstack-create-user-password-is-not-set) aiheesta
