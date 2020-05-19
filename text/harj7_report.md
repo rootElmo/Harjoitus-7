@@ -496,4 +496,46 @@ _init.sls:ssä muuttunut käyttäjän määrittely:_
 	    - password: $1$Xc08qFAA$gdTf/AzyPA5JGRRq/1H8k/
 	    - shell: /bin/bash
 
-Lähdin seuraavaksi käyttämään saltin **pillareita** käyttäjien luontiin! Käytin ohjeina ja vinkkeinä [SaltStackin dokumentaatiota](https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html), [erästä stackoverflow keskustelua](https://stackoverflow.com/questions/25077699/saltstack-create-user-password-is-not-set) aiheesta
+## Pillareissa salaisuuksia (eli käyttäjät)
+
+Lähdin seuraavaksi käyttämään saltin **pillareita** käyttäjien luontiin! Käytin ohjeina ja vinkkeinä [SaltStackin dokumentaatiota](https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html), [erästä stackoverflow keskustelua](https://stackoverflow.com/questions/25077699/saltstack-create-user-password-is-not-set) aiheesta.
+
+Loin uuden kansion /srv/**pillar/**, jonne loin myös tiedoston _top.sls_.
+
+	master $ sudo mkdir /srv/pillar
+	master $ cd /srv/pillar
+	master $ sudoedit top.sls
+
+_top.sls:_
+
+	base:
+	  'saltmine001':
+	    - saltmine/addusers
+
+Loin seuraavaksi kansion **saltmine/** ja loin sinne tiedoston _addusers.sls_.
+
+_addusers.sls:_
+
+	users:
+	  minecraft:
+	    groups:
+	      - sudo
+	      - minecraft
+
+Seuraavaksi pyysin agentti-konetta päivittämään pillar-tietonsa, sekä pyysin konetta kertomaan kyseiset tiedot
+
+	master $ sudo salt 'saltmine001' saltutil.refresh_pillar
+	master $ sudo salt 'saltmine001' pillar.items
+
+![scrshot29](../images/scrshot029.png)
+
+![scrshot30](../images/scrshot030.png)
+
+Tämän jälkeen tein kaikennäköisiä erinäisiä kikkailuja. Sain kuitenkin koneen sellaiseen tilaan, etten saanut siihen enää saltilla yhteyttä. Poistin käyttäjän '**minecraft**' ja vahingossa ylikirjoitin tiedoston **/etc/salt/minion**. Loin uuden agentti-koneen sen sijaan, että olisin säätänyt itselleni sudo-oikeudet jotenkin ja korjannut _minion_-tiedoston agenttikoneella.
+
+_kikkailukomennot, ÄLÄ KÄYTÄ:_
+
+	master $ sudo salt 'saltmine001' cmd.run 'userdel minecraft'
+	master $ sudo salt 'saltmine001' cmd.run 'echo "" | tee /etc/salt/minion'
+
+Unohdin laittaa edelliseen komentoon _echo_:lle, ja _tee_:stä parametrin **-a**, joten minion tiedosto tyhjeni.
