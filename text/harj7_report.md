@@ -539,3 +539,57 @@ _kikkailukomennot, ÄLÄ KÄYTÄ:_
 	master $ sudo salt 'saltmine001' cmd.run 'echo "" | tee /etc/salt/minion'
 
 Unohdin laittaa edelliseen komentoon _echo_:lle, ja _tee_:stä parametrin **-a**, joten minion tiedosto tyhjeni.
+
+Loin uuden agentti-koneen, jonka 'id' on **saltmine002**. Sain loppujen lopuksi pillarilla käyttäjien luomisen onnistumaan. Muutin _addusers.sls_-tiedoston nimeksi _init.sls_ ja vein sen kansioon **/srv/pillar/users**.
+
+![scrshot31](../images/scrshot031.png)
+
+Lyhensin myös **usertest**-tilan _init.sls_-tiedostoa huomattavasti yrittäessäni saada tilan toimintakuntoon.
+
+_init.sls_
+
+	{% set users = ['bob', 'tauski', 'kovane'] %}
+
+	user group:
+	  group.present:
+	    - name: user
+
+	{% for user, uid in pillar.get('users', {}).items() %}
+	{{ user }}:
+	  user.present:
+	    - uid: {{ uid }}
+	{% endfor %}
+
+Ajoin tilan onnistuneesti!
+
+	master $ sudo salt '*' state.apply usertest
+
+![scrshot32](../images/scrshot032.png)
+
+Tein seuraavaksi pari muutosta _init.sls_-tiedostoon **usertest**-tilassa, sekä _init.sls_-tiedostoon kansiossa **/srv/pillar/users/**.
+
+_usertest-tilan init.sls_
+
+	user group:
+	  group.present:
+	    - name: user
+
+	{% for user, details in pillar.get('users', {}).items() %}
+	{{ user }}:
+	  user.present:
+	    - uid: {{ details.get('uid', '') }}
+	    - password: {{ details.get('password', '')}}
+	{% endfor %}
+
+_init.sls-tiedosto, jossa käyttäjät_
+
+	users:
+	  minecraft: 
+	    uid: 1010
+	    password: test
+	  bob:
+	    uid: 1011
+	    password: test
+
+Ajoin tilan onnistuneesti aktiiviseksi, mutta en päässyt jostain syystä kirjautumaan käyttäjille.
+
