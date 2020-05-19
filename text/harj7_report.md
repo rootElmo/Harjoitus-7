@@ -659,3 +659,43 @@ _minecraft-käyttäjän oikeuksien kokeilua_
 ![scrshot35](../images/scrshot035.png)
 
 Näin olin konffannut alustavasti tarvitsevani käyttäjät!
+
+## usertest-, motdTemp-, sekä saltmine-tilan yhdistäminen
+
+Tein parit muutokset **saltmine**-tilan _init.sls_-tiedostoon. Kovakoodasin tiedostojen ja kansioiden omistajaksi käyttäjän '**minecraft**'. Olisin voinut käyttää pillareita, mutta aika rupesi loppumaan, enkä viitsinyt riskeerata mahdollisia aikataulun venymisiä. Ajoin tämän jälkeen tilan onnistuneesti!
+
+_saltmine-tilan init.sls_
+
+	minecraft directory:
+	  file.directory:
+	    - name: /home/minecraft/minecraft
+	    - user: minecraft
+	    - mode: 775
+
+	minecraft server.jar:
+	  file.managed:
+	    - name: /home/minecraft/minecraft/server.jar
+	    - source: salt://saltmine/minecraft/server.jar
+	    - user: minecraft
+	    - mode: 774
+	    - require: 
+	      - file: minecraft directory
+
+	minecraft eula.txt:
+	  file.managed:
+	    - name: /home/minecraft/minecraft/eula.txt
+	    - source: salt://saltmine/minecraft/eula.txt
+	    - user: minecraft
+	    - mode: 444
+	    - require: 
+	      - file: minecraft directory
+
+	install openjdk:
+	  pkg.installed:
+	    - name: openjdk-11-jre-headless
+
+	master $ sudo salt '*' state.apply saltmine
+
+![scrshot37](../images/scrshot037.png)
+
+Tämän jälkeen minun pitäisi pystyä käynnistämään _server.jar_ molemmilla käyttäjillä '**tauski**' ja '**minecraft**'.
