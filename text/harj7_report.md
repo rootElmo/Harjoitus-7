@@ -612,4 +612,50 @@ Vein seuraavaksi ohjelman tulostaman salasanan **users**-pillarin _init.sls_-tie
 
 ![scrshot34](../images/scrshot034.png)
 
+Tein seuraavaksi käyttäjille '**tauski**' ja '**minecraft**' määrittelyt loppuun. Salakirjoitin molempien salasanat ja annoin kummallekkin oikeat ryhmät. Tein tämän jälkeen tarvittavat muutokset _init.sls_-tiedostoon **usertest**-tilassa. Ajoin tämän jälkeen tilan onnistuneesti!
 
+_init.sls usertest-tilalle:_
+
+	minecraft group:
+	  group.present:
+	    - name: minecraft
+
+	{% for user, details in pillar.get('users', {}).items() %}
+	{{ user }}:
+	  user.present:
+	    - uid: {{ details.get('uid', '') }}
+	    - password: {{ details.get('password','')}}
+	    - hash_password: False
+	    - home: /home/minecraft
+	    {% if 'groups' in details %}
+	    - groups:
+	      {% for group in details.get('groups', []) %}
+	      - {{ group }}
+	      {% endfor %}
+	    {% endif %}
+	    - shell: /bin/bash
+	{% endfor %}
+
+_init.sls users-pillarissa:_
+
+	users:
+	  minecraft: 
+	    password: $6$qpRQ.... jne
+	    groups:
+	      - sudo
+	      - minecraft
+
+	  tauski:
+	    password: $6$EAuf8pBVI4.. jne
+	    groups:
+	      - minecraft
+
+_tauskilla kirjautuminen_
+
+![scrshot36](../images/scrshot036.png)
+
+_minecraft-käyttäjän oikeuksien kokeilua_
+
+![scrshot35](../images/scrshot035.png)
+
+Näin olin konffannut alustavasti tarvitsevani käyttäjät!
