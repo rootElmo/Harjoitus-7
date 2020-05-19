@@ -593,3 +593,23 @@ _init.sls-tiedosto, jossa käyttäjät_
 
 Ajoin tilan onnistuneesti aktiiviseksi, mutta en päässyt jostain syystä kirjautumaan käyttäjille.
 
+Sain tilan lopulta toimimaan! Aikaisemmin linkkaamassani stackoverflow-keskustelussa kerrottiin, että homma toimii, jos salasanat salakirjoittaa **mkpasswd**:llä. Jouduin asentamaan sen ensiksi.
+
+	master $ sudo apt install whois
+	master $ mkpasswd -m sha-512
+	
+	Password: 
+	$6$qpRQkZmu... jne..
+
+Vein seuraavaksi ohjelman tulostaman salasanan **users**-pillarin _init.sls_-tiedostoon käyttäjän '**minecraft**' salasanaksi. Ajoin sen jälkeen onnistuneesti **usertest**-tilan ja pääsin kirjautumaan käyttäjällä agentti-koneelle!
+
+	users:
+	  minecraft: 
+	    uid: 1010
+	    password: $6$qpRQkZmuH... jne
+
+![scrshot33](../images/scrshot033.png)
+
+![scrshot34](../images/scrshot034.png)
+
+
