@@ -227,6 +227,7 @@ _pätkää virheilmoituksen alusta:_
 	 Could not create directory /home/elmo/minecraft/logs
 
 _virheilmoitusta tulee:_
+
 ![scrshot14](../images/scrshot014.png)
 
 Ajoin seuraavaksi komennon
