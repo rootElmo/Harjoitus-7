@@ -18,7 +18,7 @@ Herra-kone:
 
 Agentti-koneet:
 * VirtualBox kone
-  * OS: Ubuntu live server 18.04.4 LTS _(linkaa ISOt)_
+  * OS: Ubuntu live server 18.04.4 LTS
   * CPU: AMD Ryzen 5 2600 Six-Core Processor
   * RAM: 2Gt
 
