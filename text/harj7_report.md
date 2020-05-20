@@ -735,3 +735,78 @@ _init.sls:ssä uusi 'delete user motd'_
 _tilan ajo, testi kirjautumalla tauskilla_
 
 ![scrshot41](../images/scrshot041.png)
+
+Seuraavaksi lisäsin **saltmine**-tilaan _minecontrol_-skriptin viemisen agentti-koneille. Veisin skriptin kansioon **/usr/local/bin**, jotta voisin kutsua skriptiä pelkästään kirjoittamalla 'minecontrol'. Ajoin tilan onnistuneesti ja kävin käynnistämässä palvelimen, sekä kirjautumassa Minecraftissä palvelimelleni.
+
+_saltmine-tilaan lisätty skriptin vienti_
+
+	minecontrol script:
+	  file.managed:
+	    - name: /usr/local/bin/minecontrol
+	    - source: salt://saltmine/2ndscript.sh
+	    - user: minecraft
+	    - mode: 774
+
+Ajoin myös herra-koneelta salt komennon katsoakseni mikä on palvelimen tila!
+
+	master $ sudo salt '*' cmd.run 'minecontrol status'
+
+![scrshot42](../images/scrshot042.png)
+
+Seuraavaksi halusin yhdistää kaikki luomani tilat. Loin _top.sls_-tiedoston kansioon **/srv/salt/** ja nimesin sinne kaikki käyttämäni tilat. Ajoin tilan aktiiviseksi onnistuneesti. Muutoksia ei tapahtunut, mikä oli oletettavaa. Saltin tuloste oli pitkä, joten [vein sen tähän tekstitiedostoon](./top-print.txt).
+
+_top.sls:_
+
+	base:
+	  'saltmine*':
+	    - motdTemp
+	    - usertest
+	    - saltmine
+
+## Uuden koneen luominen
+
+Loin seuraavaksi uuden agentti-koneen '**saltmine003**' samalla tavalla kuin kaikki muutkin koneet tähän asti. Yhdistettyäni koneen herra-koneelle, kokeilin saltilla yhteyttä ja ajoin aktiiviseksi koko salt-tilakimaran
+
+	master $ sudo salt 'saltmine003' state.apply
+
+Yllättäen kaikki tilat menivät läpi onnistuneesti!
+
+Kokeilin seuraavaksi käynnistää _server.jar_:n herra-koneelta käsin, joka onnistui! Pääsin kirjautumaan palvelimelle myös Minecraftissä!
+
+_palvelin päälle_
+
+	master $ sudo salt 'saltmine003' cmd.run 'minecontrol start'
+
+![scrshot43](../images/scrshot043.png)
+
+Seuraavaksi sammutin palvelimen ja tarkistin sen sammuneen
+
+	master $ sudo salt 'saltmine003' cmd.run 'minecontrol stop'
+	saltmine003:
+	    Stopping server.jar
+	    server.jar is stopped
+	
+	master $ sudo salt 'saltmine003' cmd.run 'minecontrol status'
+	saltmine003:
+	    server.jar is not running
+
+Olin näin ollen onnistuneesti konffannut saltilla koneen pyörittämään Minecraft-palvelinta vain yhdellä komennolla! _Huomasin jälkeenpäin, että ajaminen saltilla oli muuttanut minecraft-kansiossa olleiden tiedostojen oikeuksia, enkä pystynyt käynnistämään server.jaria käsin käyttäjillä 'minecraft' ja 'tauski'. Korjasin tämän poistamalla **/home/minecraft/minecraft7**.kansion ja ajamalla tilan uudestaan aktiiviseksi._
+
+	agent $ sudo rm -r minecraft/
+	master $ sudo salt '*' state.apply
+
+_uuden koneen käynnistämän server.jar:n testaus uudestaan_
+
+![scrshot44](../images/scrshot044.png)
+
+
+## Lopputulema
+
+Olen siis tähän mennessä luonut **usertest**-tilan, jolla luodaan pillarin tiedoista halutulle koneelle käyttäjät ja heidän tarvitsemansa asetukset ja kansiot. Olen luonut **motdTemp**-tilan, jolla putsataan automaattisesti luodut päivän viestit ja kirjoitetaan muoteilla uudet päälle. Olen luonut **saltmine**-tilan, jolla asennetaan **openjdk-11-jre**, viedään Minecraft-palvelimen tarvitsemat _server.jar_, _eula.txt_, sekä '**minecontrol**'-ohjausskripti kohde-koneelle.
+
+Olen lisännyt nämä tilat _top.sls_-tiedostoon, jotta voin vain yhdellä komennolla saada tämän kaiken toteutettua ja testien perusteella myös toimivaan kuntoon.
+
+Koen saaneeni onnistuneesti tämän tehtävän tehtyä. Tällä kertaa jäi _micontrol_-skriptin muokkaaminen grainsillä, mutta en koe tätä hirveäksi menetykseksi.
+
+## Lähteet
+

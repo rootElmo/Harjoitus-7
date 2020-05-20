@@ -1,0 +1,105 @@
+saltmine002:
+----------
+          ID: delete user motd
+    Function: file.absent
+        Name: /etc/legal
+      Result: True
+     Comment: File /etc/legal is not present
+     Started: 06:13:27.153308
+    Duration: 0.316 ms
+     Changes:   
+----------
+          ID: /etc/update-motd.d
+    Function: file.recurse
+      Result: True
+     Comment: The directory /etc/update-motd.d is in the correct state
+     Started: 06:13:27.153690
+    Duration: 71.313 ms
+     Changes:   
+----------
+          ID: /etc/motd
+    Function: file.managed
+      Result: True
+     Comment: File /etc/motd is in the correct state
+     Started: 06:13:27.225083
+    Duration: 24.322 ms
+     Changes:   
+----------
+          ID: minecraft group
+    Function: group.present
+        Name: minecraft
+      Result: True
+     Comment: Group minecraft is present and up to date
+     Started: 06:13:27.249728
+    Duration: 1.287 ms
+     Changes:   
+----------
+          ID: minecraft
+    Function: user.present
+      Result: True
+     Comment: User minecraft is present and up to date
+     Started: 06:13:27.251361
+    Duration: 9.598 ms
+     Changes:   
+----------
+          ID: tauski
+    Function: user.present
+      Result: True
+     Comment: User tauski is present and up to date
+     Started: 06:13:27.261029
+    Duration: 0.683 ms
+     Changes:   
+----------
+          ID: minecontrol script
+    Function: file.managed
+        Name: /usr/local/bin/minecontrol
+      Result: True
+     Comment: File /usr/local/bin/minecontrol is in the correct state
+     Started: 06:13:27.261765
+    Duration: 13.581 ms
+     Changes:   
+----------
+          ID: minecraft directory
+    Function: file.directory
+        Name: /home/minecraft/minecraft
+      Result: True
+     Comment: Directory /home/minecraft/minecraft is in the correct state
+              Directory /home/minecraft/minecraft updated
+     Started: 06:13:27.275423
+    Duration: 0.554 ms
+     Changes:   
+----------
+          ID: minecraft server.jar
+    Function: file.managed
+        Name: /home/minecraft/minecraft/server.jar
+      Result: True
+     Comment: File /home/minecraft/minecraft/server.jar is in the correct state
+     Started: 06:13:27.276279
+    Duration: 536.258 ms
+     Changes:   
+----------
+          ID: minecraft eula.txt
+    Function: file.managed
+        Name: /home/minecraft/minecraft/eula.txt
+      Result: True
+     Comment: File /home/minecraft/minecraft/eula.txt is in the correct state
+     Started: 06:13:27.812738
+    Duration: 21.46 ms
+     Changes:   
+----------
+          ID: install openjdk
+    Function: pkg.installed
+        Name: openjdk-11-jre-headless
+      Result: True
+     Comment: All specified packages are already installed
+     Started: 06:13:29.225641
+    Duration: 360.012 ms
+     Changes:   
+
+Summary for saltmine002
+-------------
+Succeeded: 11
+Failed:     0
+-------------
+Total states run:     11
+Total run time:    1.039 s
