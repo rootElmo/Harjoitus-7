@@ -698,4 +698,10 @@ _saltmine-tilan init.sls_
 
 ![scrshot37](../images/scrshot037.png)
 
-Tämän jälkeen minun pitäisi pystyä käynnistämään _server.jar_ molemmilla käyttäjillä '**tauski**' ja '**minecraft**'.
+Tämän jälkeen minun pitäisi pystyä käynnistämään _server.jar_ molemmilla käyttäjillä '**tauski**' ja '**minecraft**'. Otin yhteyden agentti-koneelle käyttäjällä '**minecraft**', katsoin, että kansio **minecraft/** oli luotu ja siellä oli myös vaadittavat tiedostot. Seuraavaksi käynnistin _server.jar_:in onnistuneesti komennolla komennolla
+
+	slave $ java -jar server.jar nogui
+
+![scrshot38](../images/scrshot038.png)
+
+
