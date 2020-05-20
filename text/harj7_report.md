@@ -704,4 +704,34 @@ Tämän jälkeen minun pitäisi pystyä käynnistämään _server.jar_ molemmill
 
 ![scrshot38](../images/scrshot038.png)
 
+_Pääsin myös kirjautumaan palvelimelle Minecraftissä!_
 
+![scrshot039](../images/scrshot039.png)
+
+Kirjauduin ulos agentti-koneelta ja kirjauduin SSH:lla käyttäjällä '**tauski**' ja käynnistin palvelimen onnistuneesti! Pääsin myös kirjautumaan palvelimelle Minecraftissä.
+
+![scrshot](../images/scrshot040.png)
+
+Huomasin samalla, että '**tauski**'lla kirjautuessa sain pitkän gneeroidun motd:in, jonka olin saanut aikaisemmin muilla käyttäjillä tässä tehtävässä. Ratkaisuna oli poistaa **/etc/legal**, joten lisäsin '_file.absent_'-kohdan tilaan **motdTemp** ja ajoin sen onnistuneesti!
+
+_init.sls:ssä uusi 'delete user motd'_
+
+	delete user motd:
+	  file.absent:
+	    - name: /etc/legal
+
+	{% if grains['os'] == 'Ubuntu' %}
+	/etc/update-motd.d:
+	  file.recurse:
+	    - clean: True
+	    - source: salt://motdTemp/update-motd.d
+	{% endif %}
+
+	/etc/motd:
+	  file.managed:
+	    - source: salt://motdTemp/motd
+	    - template: jinja
+
+_tilan ajo, testi kirjautumalla tauskilla_
+
+![scrshot41](../images/scrshot041.png)
