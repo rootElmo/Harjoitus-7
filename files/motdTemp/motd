@@ -1,0 +1,4 @@
+Hello!
+
+Logged into agent '{{grains['id']}}'
+OS: {{ grains['osfullname'], grains['osrelease'] }} 
