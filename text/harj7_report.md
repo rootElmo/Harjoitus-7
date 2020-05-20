@@ -67,7 +67,7 @@ Asensin openjdk-11 '_headless_':nä, tällöin kaikki graafiseen käyttöliittym
 _Huomasin myöhemmin, että olin asentanutkin openjdk:n EI-headlessinä. Tällä ei käytännössä ole väliä palvelimen toiminnan kannalta, mutta EI-headless versio on isompi asennus. Jos tallennustila on kireällä, niin tämä voi olla kriittinen valinta._
 Varmistin asennuksen onnistumisen ajamalla
 
-	slave $ java -version
+	agent $ java -version
 
 ![scrshot2](../images/scrshot002.png)
 
@@ -79,7 +79,7 @@ Seuraavaksi yritin käynnistää palvelimen _server.jar_, mutta sain virheilmoit
 
 Kokeilin tämän jälkeen käynnistää palvelimen uudestaan komennolla
 
-	slave $ java -jar server.jar nogui
+	agent $ java -jar server.jar nogui
 
 Palvelin lähti pyörimään! Odotin, että palvelin ilmoittaa "Done". Nyt pystyisin kirjautumaan Minecraftissä omalle palvelimelleni, sillä palomuuri oli auki (sitä ei oltu edes asetettu). Pääsen pelissä palvelimelle antamalla pelkästään IP-osoitteen.
 
@@ -281,6 +281,7 @@ Otin yhteyden agentti-koneelle, ja käynnistin Minecraft-palvelimen onnistuneest
 	agent $ java -jar server.jar nogui
 
 _palvelin ilmoittaa 'Done' ja päästää pelaamaan!_
+
 ![scrshot16](../images/scrshot016.png)
 
 Oletin tästä, että oikeudet siis olivat menneet nappiin. Agentti-koneella ajoin kansiossa **minecraft/** komennon
@@ -790,7 +791,7 @@ Seuraavaksi sammutin palvelimen ja tarkistin sen sammuneen
 	saltmine003:
 	    server.jar is not running
 
-Olin näin ollen onnistuneesti konffannut saltilla koneen pyörittämään Minecraft-palvelinta vain yhdellä komennolla! _Huomasin jälkeenpäin, että ajaminen saltilla oli muuttanut minecraft-kansiossa olleiden tiedostojen oikeuksia, enkä pystynyt käynnistämään server.jaria käsin käyttäjillä 'minecraft' ja 'tauski'. Korjasin tämän poistamalla **/home/minecraft/minecraft7**.kansion ja ajamalla tilan uudestaan aktiiviseksi._
+Olin näin ollen onnistuneesti konffannut saltilla koneen pyörittämään Minecraft-palvelinta vain yhdellä komennolla! _Huomasin jälkeenpäin, että ajaminen saltilla oli muuttanut minecraft-kansiossa olleiden tiedostojen oikeuksia, enkä pystynyt käynnistämään server.jaria käsin käyttäjillä 'minecraft' ja 'tauski'. Korjasin tämän poistamalla **/home/minecraft/minecraft/**.kansion ja ajamalla tilan uudestaan aktiiviseksi._
 
 	agent $ sudo rm -r minecraft/
 	master $ sudo salt '*' state.apply
@@ -810,3 +811,23 @@ Koen saaneeni onnistuneesti tämän tehtävän tehtyä. Tällä kertaa jäi _mic
 
 ## Lähteet
 
+Minecraft palvelin: https://www.minecraft.net/fi-fi/download/server/
+
+Debian wiki: https://wiki.debian.org/Java/
+
+SaltStack: https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html,
+https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html,
+https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html
+
+AskUbuntu: https://askubuntu.com/questions/382931/how-to-remove-legal-notice-from-motd-banner-for-non-root-users,
+https://askubuntu.com/questions/43317/what-is-the-difference-between-the-sudo-and-admin-group
+
+Steven Gordon: https://www.youtube.com/watch?v=YSSIm0g00m4
+
+StackOverflow: https://stackoverflow.com/questions/25077699/saltstack-create-user-password-is-not-set
+
+Elmo Rohula: [Linux palvelimet kurssin lopputyö](./linuxpalvelimet_lopputyo_raportti.pdf)
+
+
+
+Created by Elmo Rohula
