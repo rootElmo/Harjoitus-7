@@ -809,6 +809,9 @@ Olen lisännyt nämä tilat _top.sls_-tiedostoon, jotta voin vain yhdellä komen
 
 Koen saaneeni onnistuneesti tämän tehtävän tehtyä. Tällä kertaa jäi _micontrol_-skriptin muokkaaminen grainsillä, mutta en koe tätä hirveäksi menetykseksi.
 
+Löydät kaiki tässä tehtävässä käytetyt tiedostot tämän repon ala-kansiosta **files** [(linkki)](../files).
+
+
 ## Lähteet
 
 Minecraft palvelin: https://www.minecraft.net/fi-fi/download/server/
