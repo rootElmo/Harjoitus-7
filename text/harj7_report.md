@@ -814,13 +814,17 @@ Löydät kaiki tässä tehtävässä käytetyt tiedostot tämän repon ala-kansi
 
 ## Lähteet
 
+Tero Karvinen: http://terokarvinen.com/2020/configuration-managment-systems-palvelinten-hallinta-ict4tn022-spring-2020/,
+http://terokarvinen.com/2018/simple-secrets-in-salt-pillars
+
 Minecraft palvelin: https://www.minecraft.net/fi-fi/download/server/
 
 Debian wiki: https://wiki.debian.org/Java/
 
 SaltStack: https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html,
 https://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html,
-https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html
+https://docs.saltstack.com/en/latest/topics/tutorials/pillar.html,
+https://docs.saltstack.com/en/latest/ref/states/top.html
 
 AskUbuntu: https://askubuntu.com/questions/382931/how-to-remove-legal-notice-from-motd-banner-for-non-root-users,
 https://askubuntu.com/questions/43317/what-is-the-difference-between-the-sudo-and-admin-group
